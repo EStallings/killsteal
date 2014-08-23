@@ -12,17 +12,17 @@ require 'src/utils'
 require 'src/world'
 require 'src/entity'
 
-
 function love.load()
 	love.joystick.open(1)
 	love.joystick.open(2)
 
 	love.physics.setMeter(64)
-	physWorld = love.physics.newWorld(0, 0, true)
-	physWorld:setCallbacks(beginContact, endContact, preSolve, postSolve)
+	world = newWorld()
+	physWorld = world.physics;
 
-	player1 = newEntity(200, 200, 32, 0, nil)
-	player2 = newEntity(400, 200, 32, 0, nil)
+
+	player1 = newEntity(256, 256, 32, 0, nil)
+	player2 = newEntity(256, 512, 32, 0, nil)
 
 	--initial graphics setup
 	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
@@ -38,10 +38,10 @@ function love.load()
 	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
 
 	moth = love.graphics.newImage("res/player/003.png")
-	mothQuad = love.graphics.newQuad(0,0,moth:getWidth(),moth:getHeight(),moth:getWidth(),moth:getHeight())
+	mothQuad = love.graphics.newQuad(0,0,moth:getWidth()/2,moth:getHeight()/2,moth:getWidth()/2,moth:getHeight()/2)
 
 	ant = love.graphics.newImage("res/player/100.png")
-	antQuad = love.graphics.newQuad(0,0,ant:getWidth(),ant:getHeight(),ant:getWidth(),ant:getHeight())
+	antQuad = love.graphics.newQuad(0,0,ant:getWidth()/2,ant:getHeight()/2,ant:getWidth()/2,ant:getHeight()/2)
 
 end
 
@@ -69,20 +69,22 @@ function love.draw()
 		love.graphics.translate(player1.body:getX(),player1.body:getY())
 		love.graphics.rotate(player1.body:getAngle())
 		love.graphics.setColor(255,0,0,255);
-		love.graphics.drawq(moth,mothQuad,64,-64,math.pi/2)
+		love.graphics.drawq(moth,mothQuad,32,-32,math.pi/2)
 	love.graphics.pop()
 
 	love.graphics.push()
 		love.graphics.translate(player2.body:getX(),player2.body:getY())
 		love.graphics.rotate(player2.body:getAngle())
 		love.graphics.setColor(255,0,0,255);
-		love.graphics.drawq(ant,antQuad,64,-64,math.pi/2)
+		love.graphics.drawq(ant,antQuad,32,-32,math.pi/2)
 	love.graphics.pop()
 
 	for i=1, 30 do
 		love.graphics.setColor(100, 10, 10)
 		love.graphics.circle("fill", minions[i].body:getX(), minions[i].body:getY(), minions[i].shape:getRadius())
 	end
+
+	renderWorld(world.grid)
 end
 
 function beginContact(a, b, coll)
