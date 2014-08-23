@@ -9,6 +9,7 @@ function playerAI(player)
 
 end
 
+
 function newPlayer(x, y, id)
 	local player = newEntity(x, y, 32, 0, id, 100, playerAI)
 	player.swarm = {}

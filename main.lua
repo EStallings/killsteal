@@ -50,6 +50,9 @@ end
 function love.update(dt)
 	physWorld:update(dt) --this puts the world into motion
 
+	--temporary stop-the-crash fix
+	if love.joystick.getNumJoysticks() ~= 2 then return end
+
 	if(love.joystick.isOpen(1))then lJoyX1,lJoyY1,lTrig1,rJoyX1,rJoyY1,rTrig1 = love.joystick.getAxes(1)end
 	if(love.joystick.isOpen(2))then lJoyX2,lJoyY2,lTrig2,rJoyX2,rJoyY2,rTrig2 = love.joystick.getAxes(2)end
 	if(lJoyX1*lJoyX1+lJoyY1*lJoyY1<0.01)then lJoyX1 = 0;lJoyY1 = 0 end

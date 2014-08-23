@@ -22,3 +22,19 @@ function copyGrid(grid)
 	end
 	return copy
 end
+
+--distance between two entities
+function distance(e1, e2)
+	local x1 = e1.body:getX()
+	local y1 = e1.body:getY()
+	local x2 = e2.body:getX()
+	local y2 = e2.body:getY()
+
+	return math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
+end
+
+
+function normalize(vec)
+	local len = math.sqrt(vec.x*vec.x + vec.y*vec.y)
+	return {x=vec.x/len, y=vec.y/len}
+end
