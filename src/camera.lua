@@ -11,7 +11,7 @@ function newCamera()
 end
 
 function updateCamera(camera,x0,y0,x1,y1)
-	local padding = 300
+	local padding = 100
 	local minX = math.min(x0,x1)-padding
 	local minY = math.min(y0,y1)-padding
 	local maxX = math.max(x0,x1)+padding
