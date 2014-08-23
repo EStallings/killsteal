@@ -7,18 +7,22 @@ local enemySetupData = {
 			if enemy.fireTimer < 0 then enemy.fireTimer = 0 end
 
 			if enemy.target == nil then return end
-
+			local eX = enemy.body:getX()
+			local eY = enemy.body:getY()
+			local tX = enemy.target.body:getX()
+			local tY = enemy.target.body:getY()
+			enemy.body:setAngle(math.atan2(tY - eY, tX - eX))
 			--if within range, attack and don't move closer
 			if distance(enemy.target, enemy) < enemy.range then
 				--insert logic here
 				if enemy.fireTimer == 0 then
 					enemy.fireTimer = enemy.fireRate
-					newBullet(enemy.body:getX(), enemy.body:getY(), enemy.body:getAngle(), 1, 0, enemy.damage)
+					newBullet(eX, eY, enemy.body:getAngle(), 600, 0, enemy.damage)
 				end
 				return
 			end
 			--otherwise, move towards target
-			local v = normalize({x=enemy.target.body:getX()-enemy.body:getX(),y=enemy.target.body:getY()-enemy.body:getY()})
+			local v = normalize({x=tX-eX,y=tX-eX})
 			enemy.body:applyLinearImpulse(v.x * 0.2, v.y * 0.2)
 
 		end,
