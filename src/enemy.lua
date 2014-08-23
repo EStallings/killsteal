@@ -28,7 +28,7 @@ local enemySetupData = {
 		end,
 		BaseHealth = 1,
 		SightRange = 300,
-		Damage     = 100,
+		Damage     = 5,
 		Speed      = 1,
 		Range      = 300,
 		RegenRate  = 1,
@@ -41,7 +41,7 @@ local enemySize = 32 -- XXX: should this be in setupData?
 
 function newEnemy(x, y, type)
 	local data = enemySetupData[type]
-	local enemy = newEntity(x, y, enemySize/2, 0, team, data.BaseHealth, data.AI) -- TODO: give correct ai and health
+	local enemy = newEntity(x, y, enemySize/2, 0, 0, data.BaseHealth, data.AI) -- TODO: give correct ai and health
 	enemy.label = "Enemy"
 	enemy.type = type
 	enemy.enemyContacts = {}
@@ -49,6 +49,7 @@ function newEnemy(x, y, type)
 	enemy.target = nil
 	enemy.fireTimer = 0 --0 means can fire
 	enemy.fireRate = data.FireRate
+	enemy.damage = data.Damage
 
 
 	enemy.sensorShape = love.physics.newCircleShape( data.SightRange )

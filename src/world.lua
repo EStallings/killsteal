@@ -12,6 +12,7 @@ function newWorld(difficulty)
 	world.difficulty = difficulty
 	world.entities = {}
 	world.walls = {}
+	world.deletequeue = {}
 	world.physics = love.physics.newWorld(0, 0, true)
 	world.physics:setCallbacks(beginContact, endContact, preSolve, postSolve)
 

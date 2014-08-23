@@ -1,13 +1,11 @@
 
 -- entities
-local entityID = 1
 function newEntity(x, y, radius, angle, team, health, ai)
 
 	local entity        = {}
 
 	entity.label        = "Entity"
 	entity.damageRecord = {}
-	entity.contacts     = {}
 	entity.team         = team
 	entity.health       = health
 	entity.maxHealth    = health
@@ -15,8 +13,8 @@ function newEntity(x, y, radius, angle, team, health, ai)
 	entity.shape        = love.physics.newCircleShape( radius )
 	entity.fixture      = love.physics.newFixture(entity.body, entity.shape, 1)
 	entity.ai           = ai
-	entity.id           = entityID
-	entityID = entityID + 1
+	entity.dqueued      = false --destruction queued - to prevent multiple deletion
+	entity.id           = table.maxn(world.entities)+1
 	entity.body:setFixedRotation(true)
 	entity.body:setAngle(angle)
 	entity.body:setLinearDamping(5)
@@ -24,20 +22,16 @@ function newEntity(x, y, radius, angle, team, health, ai)
 
 	entity.onDestroy = function() print("Entity destroyed") end
 	entity.draw = function()
+		if entity.dqueued then return end
 		love.graphics.setColor(255, 0, 0)
 		love.graphics.circle("fill", entity.body:getX(), entity.body:getY(), entity.shape:getRadius())
 	end
+
+	entity.collisionStart = function(other, coll) end
+	entity.collisionEnd = function(other, coll) end
+
 	table.insert(world.entities, entity)
 	return entity
-end
-
-local bulletAI = function(bullet)
-	for _, j in pairs(bullet.contacts) do
-		print(j.type)
-		if j.type ~= "Bullet" and j.value.team ~= bullet.team and (j.value.team == 0 or bullet.team == 0) then
-			j.health = j.health - bullet.damage
-		end
-	end
 end
 
 function newBullet(x,y,angle, velocity,team, damage)
@@ -48,6 +42,17 @@ function newBullet(x,y,angle, velocity,team, damage)
 	bullet.body:setLinearDamping(0)
 	bullet.damage = damage
 	bullet.fixture:setUserData({type="Bullet", value=bullet})
+	bullet.collisionStart = function(other, coll)
+		if other.type ~= "Bullet" and other.value.team ~= bullet.team and (other.value.team == 0 or bullet.team == 0) then
+			if other.value.health then
+				other.value.health = other.value.health - bullet.damage
+			end
+			if not bullet.dqueued then
+				bullet.dqueued = true;
+				table.insert(world.deletequeue, bullet)
+			end
+		end
+	end
 	bullet.fixture:setGroupIndex(-1)
 	return bullet
 end

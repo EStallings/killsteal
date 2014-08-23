@@ -13,6 +13,7 @@ require 'src/world'
 require 'src/entity'
 require 'src/camera'
 require 'src/enemy'
+require 'src/player'
 
 function love.load()
 	love.joystick.open(1)
@@ -23,8 +24,7 @@ function love.load()
 	physWorld = world.physics;
 
 
-	player1 = newEntity(256, 256, 32, 0, nil)
-	player2 = newEntity(256, 512, 32, 0, nil)
+	setupPlayers(2)
 
 	--initial graphics setup
 	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
@@ -68,6 +68,21 @@ function love.update(dt)
 	if(rJoyX1*rJoyX1+rJoyY1*rJoyY1>0.1)then player1.body:setAngle(math.atan2(rJoyY1,rJoyX1))end
 	if(rJoyX2*rJoyX2+rJoyY2*rJoyY2>0.1)then player2.body:setAngle(math.atan2(rJoyY2,rJoyX2))end
 
+	--queue things with zero health for destruction
+	for _, j in pairs(world.entities) do
+		if j.health <= 0 then
+			table.insert(world.deletequeue, j)
+			j.dqueued = true
+		end
+	end
+
+	--cleanup deleted objects
+	for _,j in pairs(world.deletequeue) do
+		j.body:destroy()
+		table.remove(world.entities,j.id)
+	end
+	world.deletequeue = {}
+
 end
 
 --------------------------------------------------------------------------------
@@ -82,42 +97,32 @@ function love.draw()
 		j.draw()
 	end
 
-		love.graphics.push()
-			love.graphics.translate(player1.body:getX(),player1.body:getY())
-			love.graphics.rotate(player1.body:getAngle())
-			love.graphics.setColor(255,0,0,255);
-			love.graphics.drawq(moth,mothQuad,32,-32,math.pi/2)
-		love.graphics.pop()
-
-		love.graphics.push()
-			love.graphics.translate(player2.body:getX(),player2.body:getY())
-			love.graphics.rotate(player2.body:getAngle())
-			love.graphics.setColor(255,0,0,255);
-			love.graphics.drawq(ant,antQuad,32,-32,math.pi/2)
-		love.graphics.pop()
 	love.graphics.pop()
+
+	love.graphics.print( ""..player1.health, 10, 10)
 end
 
 function beginContact(a, b, coll)
 	x,y = coll:getNormal()
 	local au = a:getUserData()
-	local bu = a:getUserData()
-	if au.value.contacts and bu.value.contacts then
-		if bu.type ~= "" then
-			au.value.contacts[bu.value.id] = bu
-		end
-		if au.type ~= "" then
-			bu.value.contacts[au.value.id] = au
-		end
+	local bu = b:getUserData()
+	if au.value.collisionStart then
+		au.value.collisionStart(bu, coll)
+	end
+	if bu.value.collisionStart then
+		bu.value.collisionStart(au, coll)
 	end
 end
 
 function endContact(a, b, coll)
 	local au = a:getUserData()
-	local bu = a:getUserData()
-	if au.value.contacts and bu.value.contacts then
-		au.value.contacts[bu.value.id] = nil
-		bu.value.contacts[au.value.id] = nil
+	local bu = b:getUserData()
+	--print(au.type .. ' and ' .. bu.type)
+	if au.value.collisionEnd then
+		au.value.collisionEnd(bu, coll)
+	end
+	if bu.value.collisionEnd then
+		bu.value.collisionEnd(au, coll)
 	end
 end
 
