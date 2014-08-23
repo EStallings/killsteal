@@ -6,9 +6,9 @@ function newEntity(x, y, radius, angle, team, health, ai)
 
 	entity.label        = "Entity"
 	entity.damageRecord = {}
-	entity.team = team
-	entity.health = health
-	entity.maxHealth = health
+	entity.team         = team
+	entity.health       = health
+	entity.maxHealth    = health
 	entity.body         = love.physics.newBody(physWorld, x, y, "dynamic")
 	entity.shape        = love.physics.newCircleShape( radius )
 	entity.fixture      = love.physics.newFixture(entity.body, entity.shape, 1)

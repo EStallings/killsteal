@@ -1,5 +1,4 @@
 
--- in cells
 local worldWidth  = 30
 local worldHeight = 20
 local cellSize    = 128
