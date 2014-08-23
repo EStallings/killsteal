@@ -7,6 +7,7 @@
 
 ----========================================================================]]--
 
+require 'src/test'
 
 function love.load()
 
@@ -24,3 +25,7 @@ function love.draw()
 	love.graphics.setNewFont(16)
 	love.graphics.print('KILLSTEAAAAAAAAAAAAAAAAAAAL!',400,300)
 end
+
+--------------------------------------------------------------------------------
+
+function love.keyreleased(key, unicode) if key == 'escape' then love.event.push('quit') end end
