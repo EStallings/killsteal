@@ -1,0 +1,185 @@
+require 'bit'
+
+function attachCircleFixture(entity,radius,category,mask,isSensor,func) -- TODO only add to sensedLs if isSensor
+	local shape   = love.physics.newCircleShape(radius)
+	local fixture = love.physics.newFixture(entity.body,shape,1)
+	local sensedLs = {}
+	fixture:setUserData({ref   = entity,
+	                     reg   = function(e)sensedLs[e] = e   end,
+	                     unReg = function(e)sensedLs[e] = nil end,
+	                     cat   = category,
+	                     msk   = mask})
+	fixture:setSensor(isSensor)
+	if isSensor then fixture:setGroupIndex(-1) end
+	table.insert(entity.AIProcessors,function()func(sensedLs)end)
+end
+
+function newBody(x,y,angle)
+	local entity = {}
+
+	entity.AIProcessors = {}
+	entity.velocityAcc = {}
+	entity.body = love.physics.newBody(world,x,y,"dynamic")
+	entity.body:setLinearVelocity(math.random(-1,1),math.random(-1,1))
+
+	entity.update = function()
+		for _,i in pairs(entity.AIProcessors) do i() end
+
+		local vx = 0
+		local vy = 0
+		for _,i in pairs(entity.velocityAcc) do
+			vx = vx+i.x
+			vy = vy+i.y
+		end
+		local invMag = 1/(vx*vx+vy*vy)
+		if invMag ~= invMag then
+			vx = vx*invMag
+			vy = vy*invMag
+		end
+		entity.body:setLinearVelocity(vx,vy)
+	end
+
+	entity.render = function()
+		love.graphics.setColor(255,255,255,255)
+		love.graphics.circle("fill",entity.body:getX(),entity.body:getY(),10,20)
+	end
+
+	return entity
+end
+
+--------------------------------------------------------------------------------
+
+function beginContact(af,bf,_)
+	local a = af:getUserData()
+	local b = bf:getUserData()
+	if bit.bor(a.msk,b.cat) ~= 0 then a.reg(b.ref) end
+	if bit.bor(b.msk,a.cat) ~= 0 then b.reg(a.ref) end
+end
+
+function endContact(af,bf,_)
+	local a = af:getUserData()
+	local b = bf:getUserData()
+	if bit.bor(a.msk,b.cat) ~= 0 then a.unReg(b.ref) end
+	if bit.bor(b.msk,a.cat) ~= 0 then b.unReg(a.ref) end
+end
+
+--------------------------------------------------------------------------------
+
+function attachAlignmentAI(entity,radius,multiplier,mask)
+	attachCircleFixture(entity,radius,0,mask,true,function(entityLs)
+		local vx = 0
+		local vy = 0
+		local count = 0
+		for _,i in pairs(entityLs) do
+			local bx,by = i.body:getLinearVelocity();
+			if bx ~= bx or by ~= by then
+				bx = 0
+				by = 0
+			end
+			vx = vx+bx
+			vy = vy+by
+			count = count+1
+		end
+		local dist = math.sqrt(vx*vx+vy*vy)
+		if count > 1 and dist ~= 0 then
+			local invMag = multiplier/dist
+			vx = vx*invMag
+			vy = vy*invMag
+			table.insert(entity.velocityAcc,{x=vx,y=vy})
+		end
+	end)
+end
+
+function attachCohesionAI(entity,radius,multiplier,mask)
+	attachCircleFixture(entity,radius,0,mask,true,function(entityLs)
+		local vx = 0
+		local vy = 0
+		local count = 0
+		for _,i in pairs(entityLs) do
+			vx = vx+i.body:getX()
+			vy = vy+i.body:getY()
+			count = count+1
+		end
+
+		local dist = math.sqrt(vx*vx+vy*vy)
+		if count > 1 and dist ~= 0 then
+			local invMag = multiplier/dist
+			vx = vx/count
+			vy = vy/count
+			vx = vx-entity.body:getX()
+			vy = vy-entity.body:getY()
+			vx = vx*invMag
+			vy = vy*invMag
+			table.insert(entity.velocityAcc,{x=vx,y=vy})
+		end
+	end)
+end
+
+function attachSeparationAI(entity,radius,multiplier,mask)
+	attachCircleFixture(entity,radius,0,mask,true,function(entityLs)
+		local vx = 0
+		local vy = 0
+		local count = 0
+		for _,i in pairs(entityLs) do
+			vx = vx+entity.body:getX()-i.body:getX()
+			vy = vy+entity.body:getY()-i.body:getY()
+			count = count+1 
+		end
+
+		local dist = math.sqrt(vx*vx+vy*vy)
+		if count > 1 and dist ~= 0 then
+			local invMag = multiplier/dist
+			vx = vx*invMag
+			vy = vy*invMag
+			table.insert(entity.velocityAcc,{x=vx,y=vy})
+		end
+	end)
+end
+
+function attachGoalPointAI(entity,parent,multiplier)
+	table.insert(entity.AIProcessors,function()
+		local vx = parent.x-entity.body:getX()
+		local vy = parent.y-entity.body:getY()
+		local dist2 = (vx*vx+vy*vy)
+		local mag = multiplier*dist2
+		--if dist2 > 500 then
+			table.insert(entity.velocityAcc,{x=vx*mag,y=vy*mag})
+		--end
+	end)
+end
+
+--------------------------------------------------------------------------------
+
+function love.load()
+	love.physics.setMeter(64)
+	world = love.physics.newWorld(0,0,true)
+	world:setCallbacks(beginContact, endContact)
+
+	bodies = {}
+	for i=1,100 do
+		local body = newBody(math.random(100,500),math.random(100,400),0)
+		attachCircleFixture(body,10,1,1,false,function()end)
+		attachAlignmentAI  (body,100,1,1)
+		attachCohesionAI   (body,30,0.6,1)
+		attachSeparationAI (body,30,0.4,1)
+		attachGoalPointAI  (body,{x=320,y=240},0.00000005)
+		table.insert(bodies,body)
+	end
+end
+
+--------------------------------------------------------------------------------
+
+function love.update(dt)
+	world:update(dt)
+	for _,i in pairs(bodies) do i.update() end
+end
+
+--------------------------------------------------------------------------------
+
+function love.draw()
+	for _,i in pairs(bodies) do i.render() end
+end
+
+--------------------------------------------------------------------------------
+
+function love.keyreleased(key, unicode) if key == 'escape' then love.event.push('quit') end end
