@@ -26,16 +26,14 @@ function love.load()
 
 	moth = love.graphics.newImage("res/player/003.png")
 	mothQuad = love.graphics.newQuad(0,0,moth:getWidth(),moth:getHeight(),moth:getWidth(),moth:getHeight())
+	ant = love.graphics.newImage("res/player/100.png")
+	antQuad = love.graphics.newQuad(0,0,ant:getWidth(),ant:getHeight(),ant:getWidth(),ant:getHeight())
 end
 
 --------------------------------------------------------------------------------
 
 function love.update(dt)
 	physWorld:update(dt) --this puts the world into motion
-
---	for i=1,love.joystick.getNumButtons(1) do
---		print(i,love.joystick.isDown(1,i))
---	end
 
 	if(love.joystick.isOpen(1))then lJoyX1,lJoyY1,lTrig1,rJoyX1,rJoyY1,rTrig1 = love.joystick.getAxes(1)end
 	if(love.joystick.isOpen(2))then lJoyX2,lJoyY2,lTrig2,rJoyX2,rJoyY2,rTrig2 = love.joystick.getAxes(2)end
@@ -62,7 +60,7 @@ function love.draw()
 		love.graphics.translate(player2.body:getX(),player2.body:getY())
 		love.graphics.rotate(player2.body:getAngle())
 		love.graphics.setColor(255,0,0,255);
-		love.graphics.drawq(moth,mothQuad,64,-64,math.pi/2)
+		love.graphics.drawq(ant,antQuad,64,-64,math.pi/2)
 	love.graphics.pop()
 end
 
