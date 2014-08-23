@@ -1,7 +1,7 @@
 local worldWidth  = 500; --in cells
 local worldHeight = 500;
 
-function newWorld(difficulty){
+function newWorld(difficulty)
 	local world = {}
 	world.grid = new2DArray(worldWidth, worldHeight, 0);
 
@@ -10,4 +10,4 @@ function newWorld(difficulty){
 	world.entities = {}
 
 	return world;
-}
+end

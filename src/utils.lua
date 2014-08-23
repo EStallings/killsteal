@@ -1,5 +1,5 @@
 --make an NxM array with Default
-function new2DArray(n, m, d){
+function new2DArray(n, m, d)
 	local	grid = {}
 	for i = 1, n do
 	    grid[i] = {}
@@ -8,4 +8,4 @@ function new2DArray(n, m, d){
 	    end
 	end
 	return grid;
-}
+end
