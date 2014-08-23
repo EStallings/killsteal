@@ -45,6 +45,7 @@ function newBullet(x,y,angle, velocity,team, damage)
 	bullet.body:setBullet(true)
 	bullet.fixture:setSensor(true)
 	bullet.body:setLinearVelocity(velocity*math.cos(angle), velocity*math.sin(angle))
+	bullet.body:setLinearDamping(0)
 	bullet.damage = damage
 	bullet.fixture:setUserData({type="Bullet", value=bullet})
 	bullet.fixture:setGroupIndex(-1)
