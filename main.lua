@@ -23,6 +23,9 @@ function love.load()
 
 	--initial graphics setup
 	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
+
+	moth = love.graphics.newImage("res/player/003.png")
+	mothQuad = love.graphics.newQuad(0,0,moth:getWidth(),moth:getHeight(),moth:getWidth(),moth:getHeight())
 end
 
 --------------------------------------------------------------------------------
@@ -30,8 +33,12 @@ end
 function love.update(dt)
 	physWorld:update(dt) --this puts the world into motion
 
-	lJoyX1,lJoyY1,lTrig1,rJoyX1,rJoyY1,rTrig1 = love.joystick.getAxes(1)
-	lJoyX2,lJoyY2,lTrig2,rJoyX2,rJoyY2,rTrig2 = love.joystick.getAxes(2)
+--	for i=1,love.joystick.getNumButtons(1) do
+--		print(i,love.joystick.isDown(1,i))
+--	end
+
+	if(love.joystick.isOpen(1))then lJoyX1,lJoyY1,lTrig1,rJoyX1,rJoyY1,rTrig1 = love.joystick.getAxes(1)end
+	if(love.joystick.isOpen(2))then lJoyX2,lJoyY2,lTrig2,rJoyX2,rJoyY2,rTrig2 = love.joystick.getAxes(2)end
 	if(lJoyX1*lJoyX1+lJoyY1*lJoyY1<0.01)then lJoyX1 = 0;lJoyY1 = 0 end
 	if(lJoyX2*lJoyX2+lJoyY2*lJoyY2<0.01)then lJoyX2 = 0;lJoyY2 = 0 end
 	local speed = 30
@@ -48,20 +55,14 @@ function love.draw()
 		love.graphics.translate(player1.body:getX(),player1.body:getY())
 		love.graphics.rotate(player1.body:getAngle())
 		love.graphics.setColor(255,0,0,255);
-		love.graphics.rectangle("fill",-32,-32,64,64)
-		love.graphics.setColor(255,255,255,255);
-		love.graphics.rectangle("fill",0,-8,128*(rTrig1+1),16)
-		love.graphics.rectangle("fill",-8,-64*(lTrig1+1),16,128*(lTrig1+1))
+		love.graphics.drawq(moth,mothQuad,64,-64,math.pi/2)
 	love.graphics.pop()
 
 	love.graphics.push()
 		love.graphics.translate(player2.body:getX(),player2.body:getY())
 		love.graphics.rotate(player2.body:getAngle())
 		love.graphics.setColor(255,0,0,255);
-		love.graphics.rectangle("fill",-32,-32,64,64)
-		love.graphics.setColor(255,255,255,255);
-		love.graphics.rectangle("fill",0,-8,128*(rTrig2+1),16)
-		love.graphics.rectangle("fill",-8,-64*(lTrig2+1),16,128*(lTrig2+1))
+		love.graphics.drawq(moth,mothQuad,64,-64,math.pi/2)
 	love.graphics.pop()
 end
 
