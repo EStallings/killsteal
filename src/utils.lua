@@ -23,7 +23,9 @@ function copyGrid(grid)
 	return copy
 end
 
---distance between two entities
+-- VECTORS ---------------------------------------------------------------------
+
+-- distance between two entities
 function distance(e1, e2)
 	local x1 = e1.body:getX()
 	local y1 = e1.body:getY()
@@ -32,7 +34,6 @@ function distance(e1, e2)
 
 	return math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2))
 end
-
 
 function normalize(vec)
 	local len = math.sqrt(vec.x*vec.x + vec.y*vec.y)

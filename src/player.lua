@@ -1,14 +1,12 @@
 
 -- player
-isTwoPlayers = false --until proven otherwise
+isTwoPlayers = false -- until proven otherwise
 player1      = nil
 player2      = nil
 
 function playerAI(player)
 
-
 end
-
 
 function newPlayer(x, y, id)
 	local player = newEntity(x, y, 32, 0, id, 100, playerAI)
@@ -25,7 +23,6 @@ function newPlayer(x, y, id)
 	end
 	return player
 end
-
 
 function setupPlayers(numPlayers)
 	if numPlayers == 2 then isTwoPlayers = true else isTwoPlayers = false end
