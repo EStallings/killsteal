@@ -1,11 +1,12 @@
---make an NxM array with Default
+
+-- make an NxM array with Default
 function new2DArray(n, m, d)
-	local	grid = {}
+	local grid = {}
 	for i = 1, n do
-	    grid[i] = {}
-	    for j = 1, m do
-	        grid[i][j] = d
-	    end
+		grid[i] = {}
+		for j = 1, m do
+			grid[i][j] = d
+		end
 	end
 	return grid;
 end
