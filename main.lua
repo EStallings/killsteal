@@ -11,6 +11,7 @@ require 'src/minion'
 require 'src/utils'
 require 'src/world'
 require 'src/entity'
+require 'src/camera'
 
 function love.load()
 	love.joystick.open(1)
@@ -43,11 +44,13 @@ function love.load()
 	ant = love.graphics.newImage("res/player/100.png")
 	antQuad = love.graphics.newQuad(0,0,ant:getWidth()/2,ant:getHeight()/2,ant:getWidth()/2,ant:getHeight()/2)
 
+	camera = newCamera()
 end
 
 --------------------------------------------------------------------------------
 
 function love.update(dt)
+	updateCamera(camera,player1.body:getX(),player1.body:getY(),player2.body:getX(),player2.body:getY())
 	physWorld:update(dt) --this puts the world into motion
 
 	--temporary stop-the-crash fix
@@ -69,25 +72,29 @@ end
 
 function love.draw()
 	love.graphics.push()
-		love.graphics.translate(player1.body:getX(),player1.body:getY())
-		love.graphics.rotate(player1.body:getAngle())
-		love.graphics.setColor(255,0,0,255);
-		love.graphics.drawq(moth,mothQuad,32,-32,math.pi/2)
+		renderCamera(camera)
+
+		for i=1, 30 do
+			love.graphics.setColor(100, 10, 10)
+			love.graphics.circle("fill", minions[i].body:getX(), minions[i].body:getY(), minions[i].shape:getRadius())
+		end
+
+		renderWorld(world.grid)
+
+		love.graphics.push()
+			love.graphics.translate(player1.body:getX(),player1.body:getY())
+			love.graphics.rotate(player1.body:getAngle())
+			love.graphics.setColor(255,0,0,255);
+			love.graphics.drawq(moth,mothQuad,32,-32,math.pi/2)
+		love.graphics.pop()
+
+		love.graphics.push()
+			love.graphics.translate(player2.body:getX(),player2.body:getY())
+			love.graphics.rotate(player2.body:getAngle())
+			love.graphics.setColor(255,0,0,255);
+			love.graphics.drawq(ant,antQuad,32,-32,math.pi/2)
+		love.graphics.pop()
 	love.graphics.pop()
-
-	love.graphics.push()
-		love.graphics.translate(player2.body:getX(),player2.body:getY())
-		love.graphics.rotate(player2.body:getAngle())
-		love.graphics.setColor(255,0,0,255);
-		love.graphics.drawq(ant,antQuad,32,-32,math.pi/2)
-	love.graphics.pop()
-
-	for i=1, 30 do
-		love.graphics.setColor(100, 10, 10)
-		love.graphics.circle("fill", minions[i].body:getX(), minions[i].body:getY(), minions[i].shape:getRadius())
-	end
-
-	renderWorld(world.grid)
 end
 
 function beginContact(a, b, coll)
