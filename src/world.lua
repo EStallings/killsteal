@@ -1,21 +1,21 @@
 
 -- in cells
-local worldWidth  = 50
-local worldHeight = 30
+local worldWidth  = 30
+local worldHeight = 20
 local cellSize    = 128
 
 function newWorld(difficulty)
 
 	local world = {}
 
-	world.grid = new2DArray(worldWidth, worldHeight, 1, true)
+	world.grid = new2DArray(worldWidth, worldHeight, 3, true)
 	world.difficulty = difficulty
 	world.entities = {}
 	world.walls = {}
 	world.physics = love.physics.newWorld(0, 0, true)
 	world.physics:setCallbacks(beginContact, endContact, preSolve, postSolve)
 
-	cellularAutomata(world.grid,9)
+	cellularAutomata(world.grid,8)
 	addPhysicsToWorld(world,world.grid)
 
 	return world
