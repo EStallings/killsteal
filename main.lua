@@ -85,7 +85,6 @@ function love.draw()
   	love.graphics.setColor(100, 10, 10)
   	love.graphics.circle("fill", minions[i].body:getX(), minions[i].body:getY(), minions[i].shape:getRadius())
   end
-love.graphics.print(text, 10, 10)
 end
 
 function beginContact(a, b, coll)
