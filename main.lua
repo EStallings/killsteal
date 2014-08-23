@@ -68,18 +68,17 @@ function love.update(dt)
 	if(rJoyX1*rJoyX1+rJoyY1*rJoyY1>0.1)then player1.body:setAngle(math.atan2(rJoyY1,rJoyX1))end
 	if(rJoyX2*rJoyX2+rJoyY2*rJoyY2>0.1)then player2.body:setAngle(math.atan2(rJoyY2,rJoyX2))end
 
+	--print(tablelength(world.entities))
 	--queue things with zero health for destruction
 	for _, j in pairs(world.entities) do
 		if j.health <= 0 then
-			table.insert(world.deletequeue, j)
-			j.dqueued = true
+			j.die()
 		end
 	end
-
 	--cleanup deleted objects
 	for _,j in pairs(world.deletequeue) do
 		j.body:destroy()
-		table.remove(world.entities,j.id)
+		world.entities[j] = nil
 	end
 	world.deletequeue = {}
 

@@ -14,13 +14,15 @@ function newEntity(x, y, radius, angle, team, health, ai)
 	entity.fixture      = love.physics.newFixture(entity.body, entity.shape, 1)
 	entity.ai           = ai
 	entity.dqueued      = false --destruction queued - to prevent multiple deletion
-	entity.id           = table.maxn(world.entities)+1
 	entity.body:setFixedRotation(true)
 	entity.body:setAngle(angle)
 	entity.body:setLinearDamping(5)
 	entity.fixture:setUserData({type="Entity", value=entity})
 
-	entity.onDestroy = function() print("Entity destroyed") end
+	entity.die = function()
+		entity.dqueued = true
+		table.insert(world.deletequeue, entity)
+	end --default tbd
 	entity.draw = function()
 		if entity.dqueued then return end
 		love.graphics.setColor(255, 0, 0)
@@ -30,7 +32,7 @@ function newEntity(x, y, radius, angle, team, health, ai)
 	entity.collisionStart = function(other, coll) end
 	entity.collisionEnd = function(other, coll) end
 
-	table.insert(world.entities, entity)
+	world.entities[entity] = entity
 	return entity
 end
 
@@ -48,8 +50,7 @@ function newBullet(x,y,angle, velocity,team, damage)
 				other.value.health = other.value.health - bullet.damage
 			end
 			if not bullet.dqueued then
-				bullet.dqueued = true;
-				table.insert(world.deletequeue, bullet)
+				bullet.health = 0
 			end
 		end
 	end

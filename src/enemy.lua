@@ -17,7 +17,7 @@ local enemySetupData = {
 				--insert logic here
 				if enemy.fireTimer == 0 then
 					enemy.fireTimer = enemy.fireRate
-					newBullet(eX, eY, enemy.body:getAngle(), 600, 0, enemy.damage)
+					newBullet(eX, eY, enemy.body:getAngle(), 800, 0, enemy.damage)
 				end
 				return
 			end
@@ -33,7 +33,7 @@ local enemySetupData = {
 		Range      = 300,
 		RegenRate  = 1,
 		Mass       = 0.1,
-		FireRate   = 300 --higher is slower
+		FireRate   = 100 --higher is slower
 	}
 }
 
