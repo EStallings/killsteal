@@ -21,5 +21,6 @@ end
 --------------------------------------------------------------------------------
 
 function love.draw()
+	love.graphics.setNewFont(16)
 	love.graphics.print('KILLSTEAAAAAAAAAAAAAAAAAAAL!',400,300)
 end
