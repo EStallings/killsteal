@@ -39,3 +39,10 @@ function normalize(vec)
 	local len = math.sqrt(vec.x*vec.x + vec.y*vec.y)
 	return {x=vec.x/len, y=vec.y/len}
 end
+
+
+function tablelength(T)
+  local count = 0
+  for _ in pairs(T) do count = count + 1 end
+  return count
+end
