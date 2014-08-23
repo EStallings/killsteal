@@ -1,5 +1,8 @@
+
 function newController(id)
+
 	local controller = {}
+
 	controller.lJoyX = 0
 	controller.lJoyY = 0
 	controller.lTrig = 0
@@ -12,6 +15,7 @@ function newController(id)
 	controller.y     = false
 	controller.a     = false
 	controller.b     = false
+
 	return controller
 end
 
