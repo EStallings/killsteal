@@ -70,17 +70,35 @@ function attachSeparationAI(entity,radius,multiplier,mask)
 	end)
 end
 
-function attachGoalPointAI(entity,parent,multiplier)
+function attachGoalPointAI(entity, distfunc, multiplier)
 	table.insert(entity.AIProcessors,function()
-		local px = parent.x or parent:getX()
-		local py = parent.y or parent:getY()
+		if not entity.target then return end
+		local px = entity.target.x or entity.target:getX()
+		local py = entity.target.y or entity.target:getY()
 
 		local vx = px-entity.body:getX()
 		local vy = py-entity.body:getY()
-		local dist2 = math.abs(vx*vx*vx+vy*vy*vy)
-		local mag = multiplier*dist2
-		mag = mag - 0.02
+		local mag = distfunc(multiplier, vx, vy)
 			table.insert(entity.velocityAcc,{x=vx*mag,y=vy*mag})
 
 	end)
 end
+-----Distance Functions --
+
+function dist1(m, vx, vy)
+	return (m*math.abs(vx*vx*vx+vy*vy*vy)) - 0.02
+end
+
+function dist2(m, vx, vy)
+	return (m*math.abs(vx*vx+vy*vy))
+end
+
+function dist3(m, vx, vy)
+	return (m*(vx*vx+vy*vy))
+end
+
+function dist4(m, vy, vy)
+	if (vx*vx+vy*vy) < m then return dist2(1, vx, vy) else return 0 end
+end
+
+
