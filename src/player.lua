@@ -29,8 +29,8 @@ function newPlayer(x, y, angle, radius, sprite, health, controller, team)
 
 	end)
 	for i=1, 30 do
-		--local minion = newMinion(i*13+256, 356, 0, 1, player.body)
-		--attachSpriteToEntity(minion,32,sss[math.random(1,8)])
+		local minion = newMinion(i*13+256, 356, 0, 1, player.body)
+		attachSpriteToEntity(minion,32,sss[math.random(1,8)])
 	end
 	return player
 end

@@ -105,7 +105,7 @@ function attachCircleFixture(body,radius,category,mask,isSensor,func) -- TODO on
 	local fixture = love.physics.newFixture(body.body,shape,1)
 	local sensedLs = {}
 	fixture:setUserData({isBullet = false,
-											 ref   = body,
+	                     ref   = body,
 	                     reg   = function(e)sensedLs[e] = e   end,
 	                     unReg = function(e)sensedLs[e] = nil end,
 	                     cat   = category,
