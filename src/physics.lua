@@ -112,11 +112,11 @@ function beginContact(af,bf,_)
 	local b = bf:getUserData()
 	if (not a) or (not b) then return end
 	if a.isBullet then
-		b.ref.health -= a.ref.damage
+		b.ref.health = b.ref.health - a.ref.damage
 		world.deletequeue[a.ref] = a.ref
 	end
 	if b.isBullet then
-		a.ref.health -= b.ref.damage
+		a.ref.health = a.ref.health - b.ref.damage
 		world.deletequeue[b.ref] = b.ref
 	end
 	if bit.bor(a.msk,b.cat) ~= 0 then a.reg(b.ref) end
