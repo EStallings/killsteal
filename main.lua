@@ -16,6 +16,7 @@ require 'src/enemy'
 require 'src/player'
 require 'src/bit'
 require 'src/physics'
+require 'src/aimodules'
 
 function love.load()
 	love.joystick.open(1)
@@ -30,10 +31,10 @@ function love.load()
 	setupPlayers(2)
 
 	--initial graphics setup
-	-- minions = {}
-	-- for i=1, 30 do
-	-- 	minions[i] = newMinion(i*13+100, 100, 1, 1)
-	-- end
+	player1minions = {}
+	for i=1, 30 do
+		player1minions[i] = newMinion(i*13+256, 356, 0, 1, player1.body)
+	end
 	-- TMPENEMY = newEnemy(500, 300, 1)
 	-- TMPENEMY.target = player1
 
@@ -54,7 +55,7 @@ end
 function love.update(dt)
 	updateCamera(camera,player1.body:getX(),player1.body:getY(),player2.body:getX(),player2.body:getY())
 	physWorld:update(dt) --this puts the world into motion
-
+	for _,i in pairs(world.bodies) do if i.update then i.update() end end
 	--temporary stop-the-crash fix
 	if love.joystick.getNumJoysticks() ~= 2 then return end
 

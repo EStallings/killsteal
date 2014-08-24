@@ -1,3 +1,7 @@
+function newMinion(x, y, angle, type, goal)
+	return newMinionFns[type](x, y, angle, sprite, goal)
+end
+
 function newPlayer(x, y, angle, radius, sprite, health)
 	local player = newEntity(x,y,angle,sprite,health)
 	attachCircleFixture(player,radius,4,7,false,function() end)
@@ -43,7 +47,7 @@ function newEntity(x, y, angle, sprite, health)
 		-- 	vy = vy * 100/mag
 		-- end
 		local mult = 1000
-		entity.entity:applyForce(mult * vx,mult * vy)
+		entity.body:applyForce(mult * vx,mult * vy)
 	end
 
 	entity.render = function()

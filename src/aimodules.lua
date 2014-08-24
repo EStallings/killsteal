@@ -72,8 +72,11 @@ end
 
 function attachGoalPointAI(entity,parent,multiplier)
 	table.insert(entity.AIProcessors,function()
-		local vx = parent.x-entity.body:getX()
-		local vy = parent.y-entity.body:getY()
+		local px = parent.x or parent:getX()
+		local py = parent.y or parent:getY()
+
+		local vx = px-entity.body:getX()
+		local vy = py-entity.body:getY()
 		local dist2 = math.abs(vx*vx*vx+vy*vy*vy)
 		local mag = multiplier*dist2
 		mag = mag - 0.02
