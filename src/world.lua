@@ -11,6 +11,7 @@ function newWorld(difficulty)
 	world.difficulty = difficulty
 	world.bodies = {}
 	world.walls = {}
+	world.enemies = {}
 	world.deletequeue = {}
 	world.physics = love.physics.newWorld(0, 0, true)
 	world.physics:setCallbacks(beginContact, endContact, preSolve, postSolve)
@@ -59,6 +60,9 @@ function addPhysicsToWorld(world,physicsGrid)
 			if physicsGrid[i][j] == 0 then
 				local wall = newWall(i, j) --TODO pass sprite
 				table.insert(world.walls,wall)
+			elseif math.random(0,50) == 0 then
+				local enemy = newEnemy((i+0.5)*cellSize+math.random(-5,5), (j+0.5)*cellSize+math.random(-5,5), math.random(0, 360)/180 * math.pi, math.random(1, table.maxn(newEnemyFns)))
+				table.insert(world.enemies, enemy)
 			end
 		end
 	end

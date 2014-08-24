@@ -2,6 +2,18 @@ function newMinion(x, y, angle, type, goal)
 	return newMinionFns[type](x, y, angle, sprite, goal)
 end
 
+function newEnemy(x, y, angle, type)
+	return newEnemyFns[type](x, y, angle, sprite)
+end
+
+function newBullet(x, y, angle, speed)
+	local bullet = newBody(x, y, angle, nil)
+	bullet.body:setLinearDamping(0)
+	bullet.body:setLinearVelocity(speed*math.cos(angle), speed*math.sin(angle))
+
+	return bullet
+end
+
 function newWall(x, y, sprite)
 	x = x * cellSize
 	y = y * cellSize
@@ -9,7 +21,7 @@ function newWall(x, y, sprite)
 	wall.body:setType("static")
 	wall.shape   = love.physics.newRectangleShape(cellSize/2,cellSize/2,cellSize,cellSize)
 	wall.fixture = love.physics.newFixture(wall.body,wall.shape)
-	wall.fixture:setRestitution(1)
+	wall.fixture:setRestitution(0)
 	wall.fixture:setGroupIndex(-2)
 	wall.render = function()
 
@@ -26,6 +38,7 @@ function newEntity(x, y, angle, sprite, health)
 	entity.velocityAcc  = {}
 	entity.health = health
 	entity.baseHealth = health
+	entity.targetingMe = 0
 
 	entity.saveOld = function()
 		entity.oldX = entity.body:getX()
@@ -81,7 +94,8 @@ function attachCircleFixture(body,radius,category,mask,isSensor,func) -- TODO on
 	local shape   = love.physics.newCircleShape(radius)
 	local fixture = love.physics.newFixture(body.body,shape,1)
 	local sensedLs = {}
-	fixture:setUserData({ref   = body,
+	fixture:setUserData({isBullet = false,
+											 ref   = body,
 	                     reg   = function(e)sensedLs[e] = e   end,
 	                     unReg = function(e)sensedLs[e] = nil end,
 	                     cat   = category,
@@ -97,6 +111,14 @@ function beginContact(af,bf,_)
 	local a = af:getUserData()
 	local b = bf:getUserData()
 	if (not a) or (not b) then return end
+	if a.isBullet then
+		b.ref.health = b.ref.health - a.ref.damage
+		world.deletequeue[a.ref] = a.ref
+	end
+	if b.isBullet then
+		a.ref.health = a.ref.health - b.ref.damage
+		world.deletequeue[b.ref] = b.ref
+	end
 	if bit.bor(a.msk,b.cat) ~= 0 then a.reg(b.ref) end
 	if bit.bor(b.msk,a.cat) ~= 0 then b.reg(a.ref) end
 end

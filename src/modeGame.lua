@@ -50,6 +50,7 @@ modeGame.update = function(dt)
 	for _,j in pairs(world.deletequeue) do
 		j.body:destroy()
 		world.bodies[j] = nil
+		if world.enemies[j] then world.enemies[j] = nil end
 	end
 	world.deletequeue = {}
 
