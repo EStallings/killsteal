@@ -24,20 +24,21 @@ function newBody(x,y,angle)
 	--entity.body:setLinearVelocity(math.random(-1,1),math.random(-1,1))
 
 	entity.update = function()
+		entity.velocityAcc = {}
 		for _,i in pairs(entity.AIProcessors) do i() end
-
 		local vx = 0
 		local vy = 0
 		for _,i in pairs(entity.velocityAcc) do
 			vx = vx+i.x
 			vy = vy+i.y
 		end
-		local mag = math.sqrt(vx*vx+vy*vy)
-		if mag > 100 then
-			vx = vx * 100/mag
-			vy = vy * 100/mag
-		end
-		entity.body:setLinearVelocity(vx,vy)
+		-- local mag = math.sqrt(vx*vx+vy*vy)
+		-- if mag > 100 then
+		-- 	vx = vx * 100/mag
+		-- 	vy = vy * 100/mag
+		-- end
+		local mult = 1000
+		entity.body:applyForce(mult * vx,mult * vy)
 	end
 
 	entity.render = function()
@@ -143,11 +144,9 @@ function attachGoalPointAI(entity,parent,multiplier)
 		local vy = parent.y-entity.body:getY()
 		local dist2 = math.abs(vx*vx*vx+vy*vy*vy)
 		local mag = multiplier*dist2
-	--mag = mag - 0.08
-
-		-- if dist2 > 100 then
+		mag = mag - 0.02
 			table.insert(entity.velocityAcc,{x=vx*mag,y=vy*mag})
-		-- end
+
 	end)
 end
 
@@ -164,7 +163,7 @@ function love.load()
 		attachCircleFixture(body,10,1,1,false,function()end)
 		attachAlignmentAI  (body,100,2,1)
 		attachCohesionAI   (body,100,0.6,1)
-		attachSeparationAI (body,30,2,1)
+		attachSeparationAI (body,40,2.3,1)
 		attachGoalPointAI  (body,GOALPOINT,0.000000005)
 		table.insert(bodies,body)
 	end
