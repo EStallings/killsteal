@@ -1,7 +1,8 @@
-menu = {}
+local menu = {}
 modeMenu = {}
 modeMenu.load = function()
 	--see if we have a saved game
+	menu = {}
 	menu.options  = {"Continue", "New", "Help"}
 	menu.modes    = {modeGame, modeGame, modeHelp}
 	menu.modeData = {nil, nil, nil, nil}
@@ -10,7 +11,8 @@ modeMenu.load = function()
 	menu.maxIndex = table.maxn(menu.options)
 	menu.minIndex = 2
 	menu.optionSelected = false
-	menu.startTimeout = 20
+	menu.startTimeout = 50
+	menu.resetFlag = true
 
 	if love.filesystem.exists("savedgame.lua") then
 		local chunk = love.filesystem.load( "savedgame.lua" )
@@ -34,9 +36,9 @@ modeMenu.update = function()
 			if menu.selectedIndex > menu.maxIndex then menu.selectedIndex = menu.maxIndex end
 		end
 
-		if joysticks[1].a then
+		if joysticks[1].a and not menu.resetFlag then
 			menu.optionSelected = true
-		end
+		elseif not joysticks[1].a then menu.resetFlag = false end
 	end
 	if menu.optionSelected then
 		menu.startTimeout = menu.startTimeout - 1
@@ -92,7 +94,7 @@ modeMenu.draw = function()
 
 	--draw fade effect
 	if menu.optionSelected then
-		love.graphics.setColor(0,0,0,255-menu.startTimeout)
+		love.graphics.setColor(0,0,0,200-(menu.startTimeout*4))
 		love.graphics.rectangle("fill",0,0,width,height)
 	end
 end

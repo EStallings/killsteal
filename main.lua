@@ -43,10 +43,10 @@ function love.draw()
 	MODE.draw()
 end
 
-function changeMode(mode)
+function changeMode(mode, args)
 	if MODE.exit then MODE.exit() end
 	MODE = mode
-	MODE.load()
+	MODE.load(args)
 end
 
 --------------------------------------------------------------------------------
