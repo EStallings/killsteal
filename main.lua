@@ -89,12 +89,10 @@ end
 function love.draw()
 	love.graphics.push()
 		renderCamera(camera)
-
-
-	renderWorld(world.grid)
-	for _, j in pairs(world.entities) do
-		j.draw()
-	end
+		renderWorld(world.grid)
+		for _, j in pairs(world.entities) do
+			j.draw()
+		end
 
 	love.graphics.pop()
 

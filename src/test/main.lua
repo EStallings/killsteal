@@ -20,7 +20,8 @@ function newBody(x,y,angle)
 	entity.AIProcessors = {}
 	entity.velocityAcc = {}
 	entity.body = love.physics.newBody(world,x,y,"dynamic")
-	entity.body:setLinearVelocity(math.random(-1,1),math.random(-1,1))
+	entity.body:setLinearDamping(0.8)
+	--entity.body:setLinearVelocity(math.random(-1,1),math.random(-1,1))
 
 	entity.update = function()
 		for _,i in pairs(entity.AIProcessors) do i() end
@@ -31,10 +32,10 @@ function newBody(x,y,angle)
 			vx = vx+i.x
 			vy = vy+i.y
 		end
-		local invMag = 1/(vx*vx+vy*vy)
-		if invMag ~= invMag then
-			vx = vx*invMag
-			vy = vy*invMag
+		local mag = math.sqrt(vx*vx+vy*vy)
+		if mag > 100 then
+			vx = vx * 100/mag
+			vy = vy * 100/mag
 		end
 		entity.body:setLinearVelocity(vx,vy)
 	end
@@ -123,7 +124,7 @@ function attachSeparationAI(entity,radius,multiplier,mask)
 		for _,i in pairs(entityLs) do
 			vx = vx+entity.body:getX()-i.body:getX()
 			vy = vy+entity.body:getY()-i.body:getY()
-			count = count+1 
+			count = count+1
 		end
 
 		local dist = math.sqrt(vx*vx+vy*vy)
@@ -140,29 +141,31 @@ function attachGoalPointAI(entity,parent,multiplier)
 	table.insert(entity.AIProcessors,function()
 		local vx = parent.x-entity.body:getX()
 		local vy = parent.y-entity.body:getY()
-		local dist2 = (vx*vx+vy*vy)
+		local dist2 = math.abs(vx*vx*vx+vy*vy*vy)
 		local mag = multiplier*dist2
-		--if dist2 > 500 then
+	--mag = mag - 0.08
+
+		-- if dist2 > 100 then
 			table.insert(entity.velocityAcc,{x=vx*mag,y=vy*mag})
-		--end
+		-- end
 	end)
 end
 
 --------------------------------------------------------------------------------
-
+GOALPOINT = {x=320, y=240}
 function love.load()
 	love.physics.setMeter(64)
 	world = love.physics.newWorld(0,0,true)
 	world:setCallbacks(beginContact, endContact)
 
 	bodies = {}
-	for i=1,100 do
+	for i=1,50 do
 		local body = newBody(math.random(100,500),math.random(100,400),0)
 		attachCircleFixture(body,10,1,1,false,function()end)
-		attachAlignmentAI  (body,100,1,1)
-		attachCohesionAI   (body,30,0.6,1)
-		attachSeparationAI (body,30,0.4,1)
-		attachGoalPointAI  (body,{x=320,y=240},0.00000005)
+		attachAlignmentAI  (body,100,2,1)
+		attachCohesionAI   (body,100,0.6,1)
+		attachSeparationAI (body,30,2,1)
+		attachGoalPointAI  (body,GOALPOINT,0.000000005)
 		table.insert(bodies,body)
 	end
 end
@@ -177,6 +180,8 @@ end
 --------------------------------------------------------------------------------
 
 function love.draw()
+	love.graphics.setColor(255,0  ,0  ,255)
+	love.graphics.circle("fill",GOALPOINT.x,GOALPOINT.y,10,20)
 	for _,i in pairs(bodies) do i.render() end
 end
 
