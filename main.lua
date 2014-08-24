@@ -27,7 +27,6 @@ function love.load()
 	setupPlayers(2)
 
 	--initial graphics setup
-	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
 	minions = {}
 	for i=1, 30 do
 		minions[i] = newMinion(i*13+100, 100, 1, 1)
@@ -36,7 +35,7 @@ function love.load()
 	TMPENEMY.target = player1
 
 	--initial graphics setup
-	love.graphics.setBackgroundColor(104, 136, 248) --set the background color to a nice blue
+	love.graphics.setBackgroundColor(100, 36, 78) --set the background color to a nice blue
 
 	moth = love.graphics.newImage("res/player/003.png")
 	mothQuad = love.graphics.newQuad(0,0,moth:getWidth()/2,moth:getHeight()/2,moth:getWidth()/2,moth:getHeight()/2)
