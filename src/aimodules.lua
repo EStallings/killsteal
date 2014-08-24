@@ -87,6 +87,24 @@ function attachGoalPointAI(entity, distfunc, multiplier)
 
 	end)
 end
+
+function attachAttackAI(entity, range, damage, timeout)
+	entity.shootTimeout = 0
+	table.insert(entity.AIProcessors, function()
+		if (not entity.target) or (entity.passiveMode) then return end
+		local distX = entity.target:getX() - entity.body:getX()
+			local distY = entity.target:getY() - entity.body:getY()
+			local distToTarget = math.sqrt(distX*distX+distY*distY)
+			entity.body:setAngle(math.atan2(distY, distX))
+			if distToTarget < range then
+				if entity.shootTimeout <= 0 then
+					entity.shootTimeout = timeout
+					newBullet(entity.body:getX()+10*math.cos(entity.body:getAngle()), entity.body:getY()+10*math.sin(entity.body:getAngle()), entity.body:getAngle(), 5000, damage, entity.team)
+				end
+				entity.shootTimeout = entity.shootTimeout - 1
+			end
+	end)
+end
 -----Distance Functions --
 
 function dist1(m, vx, vy)
@@ -118,6 +136,7 @@ function targetWeakest(entity, entityLs)
 		end
 	end
 	if not mintarget then return end
+	entity.passiveMode = false
 	entity.target = mintarget.body
 	mintarget.targetingMe = mintarget.targetingMe + 1
 end
@@ -133,6 +152,7 @@ function targetUnpopular(entity, entityLs)
 		end
 	end
 	if not mintarget then return end
+	entity.passiveMode = false
 	entity.target = mintarget.body
 	mintarget.targetingMe = mintarget.targetingMe + 1
 end

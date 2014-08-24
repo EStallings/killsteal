@@ -19,7 +19,7 @@ function updateCamera(camera)
 		x1 = player2.body:getX()
 		y1 = player2.body:getY()
 	end
-	local padding = 300
+	local padding = 500
 	local minX = math.min(x0,x1)-padding
 	local minY = math.min(y0,y1)-padding
 	local maxX = math.max(x0,x1)+padding

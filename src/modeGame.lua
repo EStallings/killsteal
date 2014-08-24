@@ -38,7 +38,6 @@ modeGame.update = function(dt)
 		end
 	end
 	--cleanup deleted objects
-	print(tablelength(world.deletequeue))
 	for _,j in pairs(world.deletequeue) do
 		if not j.destroyed then
 			j.body:destroy()
