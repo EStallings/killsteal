@@ -70,6 +70,10 @@ function attachSeparationAI(entity,radius,multiplier,mask)
 	end)
 end
 
+function attachTargetDetectionAI(entity,radius,mask,func)
+	attachCircleFixture(entity,radius,0,mask,true,function(entityLs) func(entity, entityLs) end)
+end
+
 function attachGoalPointAI(entity, distfunc, multiplier)
 	table.insert(entity.AIProcessors,function()
 		if not entity.target then return end
@@ -101,4 +105,34 @@ function dist4(m, vy, vy)
 	if (vx*vx+vy*vy) < m then return dist2(1, vx, vy) else return 0 end
 end
 
+--Target prioritization functions--
 
+function targetWeakest(entity, entityLs)
+	if entity.target and entity.target.targetingMe then entity.target.targetingMe = entity.target.targetingMe - 1 end
+	local minhealth = 10000000
+	local mintarget = nil
+	for _,i in pairs(entityLs) do
+		if i.team ~= entity.team and i.health < minhealth then
+			mintarget = i
+			minhealth = i.health
+		end
+	end
+	if not mintarget then return end
+	entity.target = mintarget.body
+	mintarget.targetingMe = mintarget.targetingMe + 1
+end
+
+function targetUnpopular(entity, entityLs)
+	if entity.target and entity.target.targetingMe then entity.target.targetingMe = entity.target.targetingMe - 1 end
+	local mintargeting = 10000000
+	local mintarget = nil
+	for _,i in pairs(entityLs) do
+		if i.team ~= entity.team and i.targetingMe < mintargeting then
+			mintarget = i
+			mintargeting = i.targetingMe
+		end
+	end
+	if not mintarget then return end
+	entity.target = mintarget.body
+	mintarget.targetingMe = mintarget.targetingMe + 1
+end

@@ -1,7 +1,6 @@
 modePaused = {}
 modePaused.load = function()
 	modePaused.menu = false
-	modePaused.moved = false
 end
 modePaused.update = function()
 	if (joysticks[1] and joysticks[1].a) or (joysticks[2] and joysticks[2].a) then
@@ -11,11 +10,10 @@ modePaused.update = function()
 			MODE = modeGame
 		end
 	end
-	if ((joysticks[1] and joysticks[1].lJoyY ~= 0) or (joysticks[2] and joysticks[2].lJoyY ~= 0)) and not modePaused.moved then
-		modePaused.menu = not modePaused.menu
-		modePaused.moved = true;
-	elseif (joysticks[1] and joysticks[1].lJoyY == 0) or (joysticks[2] and joysticks[2].lJoyY == 0) then
-		modePaused.moved = false
+	if ((joysticks[1] and joysticks[1].lJoyY > 0) or (joysticks[2] and joysticks[2].lJoyY > 0)) then
+		modePaused.menu = true
+	elseif (joysticks[1] and joysticks[1].lJoyY < 0) or (joysticks[2] and joysticks[2].lJoyY < 0) then
+		modePaused.menu = false
 	end
 end
 

@@ -11,7 +11,7 @@ modeMenu.load = function()
 	menu.maxIndex = table.maxn(menu.options)
 	menu.minIndex = 2
 	menu.optionSelected = false
-	menu.startTimeout = 50
+	menu.startTimeout = 10
 	menu.resetFlag = true
 
 	if love.filesystem.exists("savedgame.lua") then
@@ -23,6 +23,19 @@ modeMenu.load = function()
 	  menu.selectedIndex = 1
 	  menu.minIndex = 1
 	end
+	local width = love.graphics.getWidth()
+	local height = love.graphics.getHeight()
+
+	modeMenu.canvas = love.graphics.newCanvas(width, height)
+
+  love.graphics.setCanvas(modeMenu.canvas)
+    modeMenu.canvas:clear()
+    bgIMG = love.graphics.newImage("res/menu-bg.png")
+		love.graphics.draw( bgIMG, -(1920/2)+(width/2), -(1280/2)+(height/2))
+
+		ksIMG = love.graphics.newImage("res/ks.png")
+		love.graphics.draw( ksIMG, 70, -60, .2, 1, 1)
+  love.graphics.setCanvas()
 end
 
 
@@ -53,17 +66,13 @@ local scrolloffset = love.graphics.getWidth()/2
 modeMenu.draw = function()
 	local width  = love.graphics.getWidth()
 	local height = love.graphics.getHeight()
-	scrolloffset = scrolloffset - 1
+	scrolloffset = scrolloffset - 2
 	if scrolloffset < -360 then scrolloffset = width end
 	--draw background
 	--love.graphics.setColor(0,0,100,255)
 	--love.graphics.rectangle("fill",  0, 0, width, height)
-	bgIMG = love.graphics.newImage("res/menu-bg.png")	
-	love.graphics.draw( bgIMG, -(1920/2)+(width/2), -(1280/2)+(height/2))
 
-	ksIMG = love.graphics.newImage("res/ks.png")	
-	love.graphics.draw( ksIMG, 70, -60, .2, 1, 1)
-
+	love.graphics.draw(modeMenu.canvas)
 	--draw options
 	local yoffset    = 80
 	local lineHeight = 72
