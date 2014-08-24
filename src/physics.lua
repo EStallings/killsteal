@@ -2,12 +2,6 @@ function newMinion(x, y, angle, type, goal)
 	return newMinionFns[type](x, y, angle, sprite, goal)
 end
 
-function newPlayer(x, y, angle, radius, sprite, health)
-	local player = newEntity(x,y,angle,sprite,health)
-	attachCircleFixture(player,radius,4,7,false,function() end)
-	return player
-end
-
 function newWall(x, y, sprite)
 	x = x * cellSize
 	y = y * cellSize
@@ -19,7 +13,6 @@ function newWall(x, y, sprite)
 	wall.fixture:setGroupIndex(-2)
 	wall.render = function()
 
-
 	end
 	table.insert(world.walls,wall)
 	return wall
@@ -27,10 +20,17 @@ end
 
 function newEntity(x, y, angle, sprite, health)
 	local entity = newBody(x, y, angle)
+	entity.oldX = 0
+	entity.oldY = 0
 	entity.AIProcessors = {}
 	entity.velocityAcc  = {}
 	entity.health = health
 	entity.baseHealth = health
+
+	entity.saveOld = function()
+		entity.oldX = entity.body:getX()
+		entity.oldY = entity.body:getY()
+	end
 
 	entity.update = function()
 		entity.velocityAcc = {}
@@ -41,13 +41,10 @@ function newEntity(x, y, angle, sprite, health)
 			vx = vx+i.x
 			vy = vy+i.y
 		end
-		-- local mag = math.sqrt(vx*vx+vy*vy)
-		-- if mag > 100 then
-		-- 	vx = vx * 100/mag
-		-- 	vy = vy * 100/mag
-		-- end
 		local mult = 1000
 		entity.body:applyForce(mult * vx,mult * vy)
+		entity.body:setAngle(math.atan2(entity.body:getY()-entity.oldY,
+		                                entity.body:getX()-entity.oldX))
 	end
 
 	entity.render = function()

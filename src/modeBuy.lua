@@ -1,6 +1,6 @@
 modeBuy = {}
-modeBuy.load = function()
 
+modeBuy.load = function()
 
 end
 

@@ -12,22 +12,11 @@ modeGame.load = function()
 
 	setupPlayers(2)
 
-	--initial graphics setup
-	player1minions = {}
-	for i=1, 30 do
-		player1minions[i] = newMinion(i*13+256, 356, 0, 1, player1.body)
-	end
 	-- TMPENEMY = newEnemy(500, 300, 1)
 	-- TMPENEMY.target = player1
 
 	--initial graphics setup
-	love.graphics.setBackgroundColor(100, 36, 78) --set the background color to a nice blue
-
-	moth = love.graphics.newImage("res/player/003.png")
-	mothQuad = love.graphics.newQuad(0,0,moth:getWidth()/2,moth:getHeight()/2,moth:getWidth()/2,moth:getHeight()/2)
-
-	ant = love.graphics.newImage("res/player/100.png")
-	antQuad = love.graphics.newQuad(0,0,ant:getWidth()/2,ant:getHeight()/2,ant:getWidth()/2,ant:getHeight()/2)
+	love.graphics.setBackgroundColor(128, 128, 128) --set the background color to a nice blue
 
 	camera = newCamera()
 end
@@ -36,6 +25,7 @@ end
 
 modeGame.update = function(dt)
 	updateCamera(camera,player1.body:getX(),player1.body:getY(),player2.body:getX(),player2.body:getY())
+	for _,i in pairs(world.bodies) do if i.saveOld then i.saveOld() end end
 	physWorld:update(dt) --this puts the world into motion
 	for _,i in pairs(world.bodies) do if i.update then i.update() end end
 	--temporary stop-the-crash fix

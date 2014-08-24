@@ -7,6 +7,7 @@
 
 ----========================================================================]]--
 
+require 'src/sprite'
 require 'src/minion'
 require 'src/utils'
 require 'src/world'
@@ -26,6 +27,7 @@ require 'src/modeBuy'
 MODE = modeGame
 
 function love.load()
+	initSprites()
 	MODE.load()
 end
 

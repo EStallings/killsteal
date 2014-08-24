@@ -13,6 +13,7 @@ newMinionFns = {
 		attachSeparationAI (entity,40,2.3,1)
 		attachGoalPointAI  (entity,dist1,0.000000005)
 		table.insert(world.bodies,entity)
+		return entity
 	end
 
 }
