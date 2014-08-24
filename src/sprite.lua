@@ -9,6 +9,10 @@ function initSprites()
 
 	sssImg = love.graphics.newImage("res/swarm-spec-sheet.png")
 	sss = {}
+
+	explosion32 = love.graphics.newImage("res/explosion_32.png")
+	explosion32Quad = love.graphics.newQuad(0,0,explosion32:getWidth()/2,explosion32:getHeight()/2,explosion32:getWidth()/2,explosion32:getHeight()/2)
+
 	for i=1,8 do
 		sss[i] = {img=sssImg,quad=love.graphics.newQuad((i-1)*32,0,32,32,sssImg:getWidth(),sssImg:getHeight()),width=32,height=32}
 	end
