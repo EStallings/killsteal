@@ -23,15 +23,19 @@ require 'src/controls'
 require 'src/modeGame'
 require 'src/modeMenu'
 require 'src/modeBuy'
+require 'src/modeHelp'
+require 'src/modePaused'
 
-MODE = modeGame
+MODE = modeMenu
 
 function love.load()
 	initSprites()
+	initControls()
 	MODE.load()
 end
 
 function love.update(dt)
+	updateControls()
 	MODE.update(dt)
 end
 
