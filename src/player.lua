@@ -6,6 +6,7 @@ player2      = nil
 
 function newPlayer(x, y, angle, radius, sprite, health, controller)
 	local player = newEntity(x,y,angle,sprite,health)
+	attachSpriteToEntity(player,256,moth)
 	attachCircleFixture(player,radius,4,7,false,function()
 		local speed = 10
 		player.body:applyLinearImpulse(controller.lJoyX*speed,controller.lJoyY*speed)

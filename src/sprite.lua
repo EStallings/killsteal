@@ -1,7 +1,8 @@
 function initSprites()
 
-	moth = love.graphics.newImage("res/player/003.png")
-	mothQuad = love.graphics.newQuad(0,0,moth:getWidth()/2,moth:getHeight()/2,moth:getWidth()/2,moth:getHeight()/2)
+	mothImg = love.graphics.newImage("res/player/003.png")
+	moth = {img=mothImg,quad=love.graphics.newQuad(0,0,mothImg:getWidth(),mothImg:getHeight(),mothImg:getWidth(),mothImg:getHeight()),
+	        width=128,height=128}
 
 	ant = love.graphics.newImage("res/player/100.png")
 	antQuad = love.graphics.newQuad(0,0,ant:getWidth()/2,ant:getHeight()/2,ant:getWidth()/2,ant:getHeight()/2)
