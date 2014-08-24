@@ -43,8 +43,13 @@ function newEntity(x, y, angle, sprite, health)
 		end
 		local mult = 1000
 		entity.body:applyForce(mult * vx,mult * vy)
-		entity.body:setAngle(math.atan2(entity.body:getY()-entity.oldY,
-		                                entity.body:getX()-entity.oldX))
+		vx, vy = entity.body:getLinearVelocity()
+		local speed = math.sqrt(vx*vx+vy*vy)
+		if speed > 150 then
+			vx = 150*vx/speed
+			vy = 150*vy/speed
+		end
+		if entity.subUpdate then entity.subUpdate() end
 	end
 
 	entity.render = function()

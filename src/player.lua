@@ -6,12 +6,13 @@ player2      = nil
 
 function newPlayer(x, y, angle, radius, sprite, health, controller)
 	local player = newEntity(x,y,angle,sprite,health)
+	player.body:setFixedRotation(true)
 	attachSpriteToEntity(player,256,moth)
 	attachCircleFixture(player,radius,4,7,false,function()
 		local speed = 10
 		player.body:applyLinearImpulse(controller.lJoyX*speed,controller.lJoyY*speed)
 		if(controller.rJoyX*controller.rJoyX+controller.rJoyY*controller.rJoyY>0.1)then
-			player.body:setAngle(math.atan2(controller.rJoyY,controller.rJoyX))
+			player.body:setAngle(-math.atan2(controller.rJoyY,controller.rJoyX) + math.pi/2)
 		end
 		if controller.start then
 			changeMode(modePaused)
