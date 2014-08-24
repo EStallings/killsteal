@@ -49,7 +49,7 @@ modeMenu.update = function()
 	end
 end
 
-local scrolloffset = 0
+local scrolloffset = love.graphics.getWidth()/2
 modeMenu.draw = function()
 	local width  = love.graphics.getWidth()
 	local height = love.graphics.getHeight()
