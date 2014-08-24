@@ -1,37 +1,13 @@
+newMinion = {
 
--- minion
-local minionSetupData = {
-	{
-		AI = function(minion)end,
-		BaseHealth = 1,
-		MinDist    = 50,
-		SightRange = 300,
-		Damage     = 1,
-		Speed      = 1,
-		Range      = 1,
-		RegenRate  = 1,
-		Mass       = 0.1
-	}
-}
-
-local minionSize = 12 -- XXX: should this be in setupData?
-
-function newMinion(x, y, type, team)
-	local data = minionSetupData[type]
-	local minion = newEntity(x, y, minionSize/2, 0, team, data.BaseHealth, data.AI) -- TODO: give correct ai and health
-	minion.label = "Minion"
-	minion.type = type
-	minion.minionContacts = {}
-
-	minion.sensorShape = love.physics.newCircleShape( data.MinDist )
-	minion.sensorFixture = love.physics.newFixture(minion.body, minion.sensorShape, 1)
-	minion.sensorFixture:setSensor(true)
-	minion.sensorFixture:setGroupIndex(-1);
-
-	minion.sensorFixture:setUserData({type="MinionSensor", value=minion})
-	minion.fixture:setUserData({type="Minion", value=minion})
-
-	minion.body:setMass(data.Mass)
-	return minion
+function(x, y)
+	local body = newBody(x, y, 0)
+	attachCircleFixture(body,10,1,1,false,function()end)
+	attachAlignmentAI  (body,100,2,1)
+	attachCohesionAI   (body,100,0.6,1)
+	attachSeparationAI (body,40,2.3,1)
+	attachGoalPointAI  (body,GOALPOINT,0.000000005)
+	table.insert(bodies,body)
 end
 
+}

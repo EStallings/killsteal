@@ -10,10 +10,12 @@
 require 'src/minion'
 require 'src/utils'
 require 'src/world'
-require 'src/entity'
+--require 'src/entity'
 require 'src/camera'
 require 'src/enemy'
 require 'src/player'
+require 'src/bit'
+require 'src/physics'
 
 function love.load()
 	love.joystick.open(1)
@@ -22,17 +24,18 @@ function love.load()
 	love.physics.setMeter(64)
 	world = newWorld()
 	physWorld = world.physics;
-
+	cellularAutomata(world.grid,8)
+	addPhysicsToWorld(world,world.grid)
 
 	setupPlayers(2)
 
 	--initial graphics setup
-	minions = {}
-	for i=1, 30 do
-		minions[i] = newMinion(i*13+100, 100, 1, 1)
-	end
-	TMPENEMY = newEnemy(500, 300, 1)
-	TMPENEMY.target = player1
+	-- minions = {}
+	-- for i=1, 30 do
+	-- 	minions[i] = newMinion(i*13+100, 100, 1, 1)
+	-- end
+	-- TMPENEMY = newEnemy(500, 300, 1)
+	-- TMPENEMY.target = player1
 
 	--initial graphics setup
 	love.graphics.setBackgroundColor(100, 36, 78) --set the background color to a nice blue
@@ -51,9 +54,7 @@ end
 function love.update(dt)
 	updateCamera(camera,player1.body:getX(),player1.body:getY(),player2.body:getX(),player2.body:getY())
 	physWorld:update(dt) --this puts the world into motion
-	for _, j in pairs(world.entities) do
-		if j.ai then j.ai(j) end
-	end
+
 	--temporary stop-the-crash fix
 	if love.joystick.getNumJoysticks() ~= 2 then return end
 
@@ -67,17 +68,16 @@ function love.update(dt)
 	if(rJoyX1*rJoyX1+rJoyY1*rJoyY1>0.1)then player1.body:setAngle(math.atan2(rJoyY1,rJoyX1))end
 	if(rJoyX2*rJoyX2+rJoyY2*rJoyY2>0.1)then player2.body:setAngle(math.atan2(rJoyY2,rJoyX2))end
 
-	--print(tablelength(world.entities))
 	--queue things with zero health for destruction
-	for _, j in pairs(world.entities) do
-		if j.health <= 0 then
+	for _, j in pairs(world.bodies) do
+		if j.health and j.health <= 0 then
 			j.die()
 		end
 	end
 	--cleanup deleted objects
 	for _,j in pairs(world.deletequeue) do
 		j.body:destroy()
-		world.entities[j] = nil
+		world.bodies[j] = nil
 	end
 	world.deletequeue = {}
 
@@ -89,43 +89,11 @@ function love.draw()
 	love.graphics.push()
 		renderCamera(camera)
 		renderWorld(world.grid)
-		for _, j in pairs(world.entities) do
-			j.draw()
+		for _, j in pairs(world.bodies) do
+			j.render()
 		end
 
 	love.graphics.pop()
-
-	love.graphics.print( ""..player1.health, 10, 10)
-end
-
-function beginContact(a, b, coll)
-	x,y = coll:getNormal()
-	local au = a:getUserData()
-	local bu = b:getUserData()
-	if au.value.collisionStart then
-		au.value.collisionStart(bu, coll)
-	end
-	if bu.value.collisionStart then
-		bu.value.collisionStart(au, coll)
-	end
-end
-
-function endContact(a, b, coll)
-	local au = a:getUserData()
-	local bu = b:getUserData()
-	--print(au.type .. ' and ' .. bu.type)
-	if au.value.collisionEnd then
-		au.value.collisionEnd(bu, coll)
-	end
-	if bu.value.collisionEnd then
-		bu.value.collisionEnd(au, coll)
-	end
-end
-
-function preSolve(a, b, coll)
-end
-
-function postSolve(a, b, coll, normalimpulse1, tangentimpulse1, normalimpulse2, tangentimpulse2)
 end
 
 --------------------------------------------------------------------------------

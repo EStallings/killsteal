@@ -21,7 +21,6 @@ function newBody(x,y,angle)
 	entity.velocityAcc = {}
 	entity.body = love.physics.newBody(world,x,y,"dynamic")
 	entity.body:setLinearDamping(0.8)
-	--entity.body:setLinearVelocity(math.random(-1,1),math.random(-1,1))
 
 	entity.update = function()
 		entity.velocityAcc = {}

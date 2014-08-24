@@ -1,7 +1,7 @@
 
-local worldWidth  = 30
-local worldHeight = 20
-local cellSize    = 128
+worldWidth  = 30
+worldHeight = 20
+cellSize    = 128
 
 function newWorld(difficulty)
 
@@ -9,14 +9,11 @@ function newWorld(difficulty)
 
 	world.grid = new2DArray(worldWidth, worldHeight, 3, true)
 	world.difficulty = difficulty
-	world.entities = {}
+	world.bodies = {}
 	world.walls = {}
 	world.deletequeue = {}
 	world.physics = love.physics.newWorld(0, 0, true)
 	world.physics:setCallbacks(beginContact, endContact, preSolve, postSolve)
-
-	cellularAutomata(world.grid,8)
-	addPhysicsToWorld(world,world.grid)
 
 	return world
 end
@@ -60,12 +57,7 @@ function addPhysicsToWorld(world,physicsGrid)
 	for i = 1,table.maxn(physicsGrid) do
 		for j = 1,table.maxn(physicsGrid[i]) do
 			if physicsGrid[i][j] == 0 then
-				local wall = {}
-				wall.body    = love.physics.newBody(world.physics,i*cellSize,j*cellSize,"static")
-				wall.shape   = love.physics.newRectangleShape(cellSize/2,cellSize/2,cellSize,cellSize)
-				wall.fixture = love.physics.newFixture(wall.body,wall.shape)
-				wall.fixture:setUserData({type="Wall", value=wall})
-				wall.fixture:setRestitution(1)
+				local wall = newWall(i, j) --TODO pass sprite
 				table.insert(world.walls,wall)
 			end
 		end
