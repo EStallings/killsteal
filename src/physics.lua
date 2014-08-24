@@ -6,12 +6,18 @@ function newEnemy(x, y, angle, type)
 	return newEnemyFns[type](x, y, angle, sprite)
 end
 
-function newBullet(x, y, angle, speed)
+function newBullet(x, y, angle, speed, damage, team)
 	local bullet = newBody(x, y, angle, nil)
 	bullet.body:setLinearDamping(0)
 	bullet.body:setLinearVelocity(speed*math.cos(angle), speed*math.sin(angle))
-
-	return bullet
+	bullet.body:setMass(0)
+	local fixture = attachCircleFixture(bullet,15,nil,nil,true,nil)
+	fixture:setUserData({isBullet = true,
+											 ref   = bullet,
+	                     cat   = 1,
+	                     msk   = 1})
+	bullet.damage = damage
+	bullet.team = team
 end
 
 function newWall(x, y, sprite)
@@ -39,13 +45,16 @@ function newEntity(x, y, angle, sprite, health)
 	entity.health = health
 	entity.baseHealth = health
 	entity.targetingMe = 0
+	entity.destroyed = false
 
 	entity.saveOld = function()
+		if entity.destroyed then return end
 		entity.oldX = entity.body:getX()
 		entity.oldY = entity.body:getY()
 	end
 
 	entity.update = function()
+		if entity.destroyed then return end
 		entity.velocityAcc = {}
 		for _,i in pairs(entity.AIProcessors) do i() end
 		local vx = 0
@@ -66,6 +75,7 @@ function newEntity(x, y, angle, sprite, health)
 	end
 
 	entity.render = function()
+		if entity.destroyed then return end
 		love.graphics.setColor(0,255,255,255)
 		love.graphics.circle("fill",entity.body:getX(),entity.body:getY(),10,20)
 	end
@@ -102,7 +112,10 @@ function attachCircleFixture(body,radius,category,mask,isSensor,func) -- TODO on
 	                     msk   = mask})
 	fixture:setSensor(isSensor)
 	if isSensor then fixture:setGroupIndex(-1) end
-	table.insert(body.AIProcessors,function()func(sensedLs)end)
+	if func then
+		table.insert(body.AIProcessors,function()func(sensedLs)end)
+	end
+	return fixture
 end
 
 ---------------------------------------------
@@ -111,23 +124,27 @@ function beginContact(af,bf,_)
 	local a = af:getUserData()
 	local b = bf:getUserData()
 	if (not a) or (not b) then return end
-	if a.isBullet then
-		b.ref.health = b.ref.health - a.ref.damage
+	if a.isBullet and a.ref.team ~= b.ref.team then
+		if b.ref.health then
+			b.ref.health = b.ref.health - a.ref.damage
+		end
 		world.deletequeue[a.ref] = a.ref
 	end
-	if b.isBullet then
-		a.ref.health = a.ref.health - b.ref.damage
+	if b.isBullet and a.ref.team ~= b.ref.team then
+		if a.ref.health then
+			a.ref.health = a.ref.health - b.ref.damage
+		end
 		world.deletequeue[b.ref] = b.ref
 	end
-	if bit.bor(a.msk,b.cat) ~= 0 then a.reg(b.ref) end
-	if bit.bor(b.msk,a.cat) ~= 0 then b.reg(a.ref) end
+	if bit.bor(a.msk,b.cat) ~= 0 and a.reg then a.reg(b.ref) end
+	if bit.bor(b.msk,a.cat) ~= 0 and b.reg then b.reg(a.ref) end
 end
 
 function endContact(af,bf,_)
 	local a = af:getUserData()
 	local b = bf:getUserData()
 	if (not a) or (not b) then return end
-	if bit.bor(a.msk,b.cat) ~= 0 then a.unReg(b.ref) end
-	if bit.bor(b.msk,a.cat) ~= 0 then b.unReg(a.ref) end
+	if bit.bor(a.msk,b.cat) ~= 0 and a.unReg then a.unReg(b.ref) end
+	if bit.bor(b.msk,a.cat) ~= 0 and b.unReg then b.unReg(a.ref) end
 end
 

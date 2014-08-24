@@ -127,7 +127,7 @@ function targetUnpopular(entity, entityLs)
 	local mintargeting = 10000000
 	local mintarget = nil
 	for _,i in pairs(entityLs) do
-		if i.team ~= entity.team and i.targetingMe < mintargeting then
+		if i.team ~= entity.team and i.targetingMe and i.targetingMe < mintargeting then
 			mintarget = i
 			mintargeting = i.targetingMe
 		end
