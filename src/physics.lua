@@ -2,9 +2,18 @@ function newMinion(x, y, angle, type, goal)
 	return newMinionFns[type](x, y, angle, sprite, goal)
 end
 
-function newPlayer(x, y, angle, radius, sprite, health)
+function newPlayer(x, y, angle, radius, sprite, health, controller)
 	local player = newEntity(x,y,angle,sprite,health)
-	attachCircleFixture(player,radius,4,7,false,function() end)
+	attachCircleFixture(player,radius,4,7,false,function()
+		local speed = 10
+		player.body:applyLinearImpulse(controller.lJoyX*speed,controller.lJoyY*speed)
+		if(controller.rJoyX*controller.rJoyX+controller.rJoyY*controller.rJoyY>0.1)then
+			player.body:setAngle(math.atan2(controller.rJoyY,controller.rJoyX))
+		end
+		if controller.start then
+			changeMode(modePaused)
+		end
+	end)
 	return player
 end
 
